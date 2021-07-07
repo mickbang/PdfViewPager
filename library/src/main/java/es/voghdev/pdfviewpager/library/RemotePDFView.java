@@ -3,7 +3,7 @@ package es.voghdev.pdfviewpager.library;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
@@ -19,7 +19,7 @@ import es.voghdev.pdfviewpager.library.util.FileUtil;
  * @UpdateDate: 7/7/21 10:44 AM
  * @UpdateRemark:
  */
-public class RemotePDFView extends LinearLayout implements DownloadFile.Listener {
+public class RemotePDFView extends FrameLayout implements DownloadFile.Listener {
     private RemotePDFViewPager remotePDFViewPager;
     private PDFPagerAdapter adapter;
     private OnPdfLoadListener mLoadListener;
@@ -59,7 +59,7 @@ public class RemotePDFView extends LinearLayout implements DownloadFile.Listener
     private void updateLayout() {
         removeAllViewsInLayout();
         addView(remotePDFViewPager,
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
     }
 
     public void setLoadListener(OnPdfLoadListener loadListener) {
@@ -81,14 +81,20 @@ public class RemotePDFView extends LinearLayout implements DownloadFile.Listener
         remotePDFViewPager.setId(R.id.pdfViewPager_lib);
     }
 
+    public void destroy(){
+        if (adapter != null) {
+            adapter.close();
+        }
+    }
 
-    interface OnPdfLoadListener {
+
+    public interface OnPdfLoadListener {
         void onLoadFail(Exception e);
 
         void onLoadSuccess(String destPath);
     }
 
-    interface onPdfLoadProgressListener extends OnPdfLoadListener {
+    public interface onPdfLoadProgressListener extends OnPdfLoadListener {
         void onProgressUpdate(int progress, int total);
     }
 }

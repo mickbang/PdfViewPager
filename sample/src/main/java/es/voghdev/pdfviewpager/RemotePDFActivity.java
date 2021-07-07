@@ -15,34 +15,29 @@
  */
 package es.voghdev.pdfviewpager;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
-import es.voghdev.pdfviewpager.library.RemotePDFViewPager;
-import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.remote.DownloadFile;
-import es.voghdev.pdfviewpager.library.util.FileUtil;
+import es.voghdev.pdfviewpager.library.RemotePDFView;
 
-public class RemotePDFActivity extends BaseSampleActivity implements DownloadFile.Listener {
-    LinearLayout root;
-    RemotePDFViewPager remotePDFViewPager;
+public class RemotePDFActivity extends BaseSampleActivity {
     EditText etPdfUrl;
     Button btnDownload;
-    PDFPagerAdapter adapter;
-
+    RemotePDFView mRemotePDFView;
+    ProgressBar pb_pdf;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.remote_pdf_example);
         setContentView(R.layout.activity_remote_pdf);
 
-        root = findViewById(R.id.remote_pdf_root);
         etPdfUrl = findViewById(R.id.et_pdfUrl);
         btnDownload = findViewById(R.id.btn_download);
+        mRemotePDFView = findViewById(R.id.remote_pdf_view);
+        pb_pdf = findViewById(R.id.pb_pdf);
 
         setDownloadButtonListener();
     }
@@ -51,19 +46,16 @@ public class RemotePDFActivity extends BaseSampleActivity implements DownloadFil
     protected void onDestroy() {
         super.onDestroy();
 
-        if (adapter != null) {
-            adapter.close();
+        if (mRemotePDFView != null) {
+            mRemotePDFView.destroy();
         }
     }
 
     protected void setDownloadButtonListener() {
-        final Context ctx = this;
-        final DownloadFile.Listener listener = this;
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                remotePDFViewPager = new RemotePDFViewPager(ctx, getUrlFromEditText(), listener);
-                remotePDFViewPager.setId(R.id.pdfViewPager);
+                mRemotePDFView.loadPdf(getUrlFromEditText());
                 hideDownloadButton();
             }
         });
@@ -79,35 +71,20 @@ public class RemotePDFActivity extends BaseSampleActivity implements DownloadFil
 
     public void hideDownloadButton() {
         btnDownload.setVisibility(View.INVISIBLE);
-    }
+        pb_pdf.setVisibility(View.VISIBLE);
+        mRemotePDFView.setVisibility(View.GONE);
+        mRemotePDFView.setLoadListener(new RemotePDFView.OnPdfLoadListener() {
+            @Override
+            public void onLoadFail(Exception e) {
 
-    public void updateLayout() {
-        root.removeAllViewsInLayout();
-        root.addView(etPdfUrl,
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        root.addView(btnDownload,
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        root.addView(remotePDFViewPager,
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    }
+            }
 
-    @Override
-    public void onSuccess(String url, String destinationPath) {
-        adapter = new PDFPagerAdapter(this, FileUtil.extractFileNameFromURL(url));
-        remotePDFViewPager.setAdapter(adapter);
-        updateLayout();
-        showDownloadButton();
-    }
-
-    @Override
-    public void onFailure(Exception e) {
-        e.printStackTrace();
-        showDownloadButton();
-    }
-
-    @Override
-    public void onProgressUpdate(int progress, int total) {
-
+            @Override
+            public void onLoadSuccess(String destPath) {
+                pb_pdf.setVisibility(View.GONE);
+                mRemotePDFView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
 
