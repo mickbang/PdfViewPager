@@ -54,6 +54,8 @@ public class DownloadFileUrlConnectionImpl implements DownloadFile {
                     HttpURLConnection urlConnection = null;
                     URL urlObj = new URL(url);
                     urlConnection = (HttpURLConnection) urlObj.openConnection();
+                    urlConnection.setReadTimeout(15*1000);
+                    urlConnection.setConnectTimeout(15*1000);
                     int totalSize = urlConnection.getContentLength();
                     int downloadedSize = 0;
                     int counter = 0;

@@ -22,15 +22,15 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
 
 import es.voghdev.pdfviewpager.library.remote.DownloadFile;
 import es.voghdev.pdfviewpager.library.remote.DownloadFileUrlConnectionImpl;
 import es.voghdev.pdfviewpager.library.util.FileUtil;
+import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
-public class RemotePDFViewPager extends ViewPager implements DownloadFile.Listener {
+public class RemotePDFViewPager extends VerticalViewPager implements DownloadFile.Listener {
     protected Context context;
     protected DownloadFile downloadFile;
     protected DownloadFile.Listener listener;
