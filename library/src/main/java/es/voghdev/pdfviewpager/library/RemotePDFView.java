@@ -22,7 +22,6 @@ import es.voghdev.pdfviewpager.library.util.FileUtil;
 public class RemotePDFView extends LinearLayout implements DownloadFile.Listener {
     private RemotePDFViewPager remotePDFViewPager;
     private PDFPagerAdapter adapter;
-    private String pdfUrl;
     private OnPdfLoadListener mLoadListener;
 
     public RemotePDFView(Context context) {
